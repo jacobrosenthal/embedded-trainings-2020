@@ -20,7 +20,7 @@ const PID: u16 = 0x521f;
 fn main() -> Result<(), anyhow::Error> {
     let args = env::args().skip(1 /* program name */).collect::<Vec<_>>();
 
-    ensure!(args.len() == 1, "expected exactly one argument");
+    ensure!(args.len() == 2, "expected exactly one argument");
 
     let dongle = serialport::available_ports()?
         .into_iter()
@@ -35,7 +35,9 @@ connect the Dongle to your laptop or PC and press the reset button to put it in 
 if the red LED was blinking and you got this message then the device wasn't correctly enumerated; remove it and try again")
         })?;
 
-    let path = Path::new(&args[0]);
+    let sd = &args[0];
+
+    let path = Path::new(&args[1]);
     let filename = Path::new(
         path.file_name()
             .ok_or_else(|| anyhow!("{} has no file name", path.display()))?,
@@ -113,7 +115,7 @@ if the red LED was blinking and you got this message then the device wasn't corr
             "--hw-version",
             "52",
             "--sd-req",
-            "0x00",
+            sd,
             "--application-version",
             "0",
         ])
